@@ -1,4 +1,5 @@
 using System.Diagnostics.Metrics;
+using System.Runtime.CompilerServices;
 using AiCostGuard.DependencyInjection;
 using AiCostGuard.Exceptions;
 using AiCostGuard.Observability;
@@ -87,6 +88,7 @@ public sealed class ObservabilityAndDiTests
             }
         });
 
+        RuntimeHelpers.RunClassConstructor(typeof(CostGuardMetrics).TypeHandle);
         listener.Start();
 
         FakeChatClient primary = new(defaultModelId: "metric-model", inputTokens: 100, outputTokens: 200);

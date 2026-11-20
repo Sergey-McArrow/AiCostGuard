@@ -11,6 +11,7 @@
     <RepositoryUrl>https://github.com/sergey-mcarrow/AiCostGuard.git</RepositoryUrl>
     <RootNamespace>AiCostGuard</RootNamespace>
     <Version>0.1.0-preview.1</Version>
+    <Version>0.1.0</Version>
     <Authors>sergey-mcarrow</Authors>
     <Description>Token-aware rate limiter, cost guard, and automatic fallback middleware for
       Microsoft.Extensions.AI (IChatClient).</Description>
@@ -18,8 +19,13 @@
       ai;llm;microsoft-extensions-ai;meai;rate-limiting;cost-guard;tokens;middleware;dotnet</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageProjectUrl>https://github.com/sergey-mcarrow/AiCostGuard</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/sergey-mcarrow/AiCostGuard</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <Deterministic>true</Deterministic>
+    <DebugType>embedded</DebugType>
     <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
   </PropertyGroup>
 

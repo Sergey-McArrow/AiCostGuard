@@ -1,6 +1,7 @@
 # Meai.CostGuard (`AiCostGuard`)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
+[![NuGet](https://img.shields.io/nuget/v/Meai.CostGuard.svg)](https://www.nuget.org/packages/Meai.CostGuard)
 [![.NET](https://img.shields.io/badge/.NET-10.0%2B-512BD4.svg)](https://dotnet.microsoft.com/)
 [![Native AOT](https://img.shields.io/badge/Native%20AOT-Compatible-brightgreen.svg)](https://learn.microsoft.com/dotnet/core/deploying/native-aot/)
 
@@ -24,8 +25,6 @@ Standard HTTP rate limiters count *requests per minute*, which fails for LLM wor
 - **Built-in Observability** — `System.Diagnostics.Metrics` (`Meter("AiCostGuard")`) + `[LoggerMessage]` source-generated logging.
 
 ## Quick Start
-
-> **Note:** Package is currently in active development (`0.1.0-preview.1`).
 
 ```bash
 dotnet add package Meai.CostGuard
@@ -85,13 +84,23 @@ Subscribe to the `"AiCostGuard"` meter in OpenTelemetry / `dotnet-counters`:
 | `costguard.fallbacks.triggered` | `Counter<long>` | Number of requests routed to the fallback client |
 | `costguard.requests.rejected` | `Counter<long>` | Number of requests rejected with `CostGuardLimitExceededException` |
 
+## Known Limitations (`v0.1.0`)
+
+Please keep the following design trade-offs in mind when deploying to production:
+
+- **Single-Instance In-Memory State**: The default `InMemoryBudgetStore` and `SlidingWindowTokenRateLimiter` track quotas in-process. For multi-instance / Kubernetes deployments, implement and register a distributed `IBudgetStore` and `ITokenRateLimiter` (e.g., backed by Redis).
+- **Bounded `KeySelector` Cardinality**: In-memory tenant buckets are retained for the lifetime of the process without automatic TTL eviction. Use bounded identifiers (such as `TenantId` or `UserId`) rather than unbounded per-request GUIDs or ephemeral IP addresses.
+- **Text-Only Pre-Flight Heuristic**: The default `HeuristicTokenEstimator` estimates tokens from `TextContent` and `ChatOptions.Instructions` (`~4 chars/token`). Multimodal attachments (`DataContent`) and `ChatOptions.Tools` schemas are not estimated pre-flight, though actual token usage reported in `UsageDetails` is always reconciled post-response.
+
+See [ROADMAP.md](./ROADMAP.md) for upcoming improvements and community-wanted extensions.
+
 ## Requirements
 
 - **.NET 10.0+** (forward-compatible with .NET 11+)
 
 ## Contributing
 
-Contributions are welcome! Please read [CONTRIBUTING.md](./CONTRIBUTING.md) and our [Code of Conduct](./CODE_OF_CONDUCT.md) before opening a pull request.
+Contributions are welcome! Please read [CONTRIBUTING.md](./CONTRIBUTING.md), check the [ROADMAP.md](./ROADMAP.md), and review our [Code of Conduct](./CODE_OF_CONDUCT.md) before opening a pull request.
 
 ## License
 
