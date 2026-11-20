@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <IsAotCompatible>true</IsAotCompatible>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+    <!-- NuGet Package Metadata -->
+    <PackageId>Meai.CostGuard</PackageId>
+    <PackageProjectUrl>https://github.com/sergey-mcarrow/AiCostGuard</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/sergey-mcarrow/AiCostGuard.git</RepositoryUrl>
+    <RootNamespace>AiCostGuard</RootNamespace>
+    <Version>0.1.0-preview.1</Version>
+    <Authors>sergey-mcarrow</Authors>
+    <Description>Token-aware rate limiter, cost guard, and automatic fallback middleware for
+      Microsoft.Extensions.AI (IChatClient).</Description>
+    <PackageTags>
+      ai;llm;microsoft-extensions-ai;meai;rate-limiting;cost-guard;tokens;middleware;dotnet</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\"
+      Condition="Exists('..\..\README.md')" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.AI" Version="11.0.0" />
+    <PackageReference Include="Microsoft.Extensions.AI.Abstractions" Version="11.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="11.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="11.0.0" />
+  </ItemGroup>
+
+</Project>
