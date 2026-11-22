@@ -4,7 +4,7 @@ This document outlines the current capabilities of `Meai.CostGuard` and planned 
 
 ---
 
-## `v0.1.0` (Current Release)
+## `v0.1.1` (Current Release)
 
 - [x] `CostGuardChatClient` (`DelegatingChatClient`) supporting both `GetResponseAsync` and `GetStreamingResponseAsync`.
 - [x] Per-request token guardrail (`MaxTokensPerRequest`).

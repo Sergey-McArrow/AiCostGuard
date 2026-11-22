@@ -11,7 +11,7 @@ A lightweight, Native AOT-compatible **Token-Aware Rate Limiter, Cost Guard, and
 
 ## Why Meai.CostGuard?
 
-Standard HTTP rate limiters count *requests per minute*, which fails for LLM workloads where a single prompt can consume 50 tokens or 100,000 tokens. **Meai.CostGuard** wraps any `IChatClient` to enforce **tokens-per-minute (TPM)** quotas and **USD spend budgets** per tenant, with automatic reconciliation against real provider `UsageDetails` (including streaming responses) and seamless fallback to a cheaper or local model (e.g., Ollama via `OllamaSharp`).
+Standard HTTP rate limiters count _requests per minute_, which fails for LLM workloads where a single prompt can consume 50 tokens or 100,000 tokens. **Meai.CostGuard** wraps any `IChatClient` to enforce **tokens-per-minute (TPM)** quotas and **USD spend budgets** per tenant, with automatic reconciliation against real provider `UsageDetails` (including streaming responses) and seamless fallback to a cheaper or local model (e.g., Ollama via `OllamaSharp`).
 
 ## Features
 
@@ -77,14 +77,14 @@ services.AddChatClient(primaryClient)
 
 Subscribe to the `"AiCostGuard"` meter in OpenTelemetry / `dotnet-counters`:
 
-| Metric | Type | Description |
-| :--- | :--- | :--- |
-| `costguard.tokens.consumed` | `Counter<long>` | Total input/output tokens reconciled |
-| `costguard.cost.usd` | `Counter<double>` | Total reconciled cost in USD |
-| `costguard.fallbacks.triggered` | `Counter<long>` | Number of requests routed to the fallback client |
-| `costguard.requests.rejected` | `Counter<long>` | Number of requests rejected with `CostGuardLimitExceededException` |
+| Metric                          | Type              | Description                                                        |
+| :------------------------------ | :---------------- | :----------------------------------------------------------------- |
+| `costguard.tokens.consumed`     | `Counter<long>`   | Total input/output tokens reconciled                               |
+| `costguard.cost.usd`            | `Counter<double>` | Total reconciled cost in USD                                       |
+| `costguard.fallbacks.triggered` | `Counter<long>`   | Number of requests routed to the fallback client                   |
+| `costguard.requests.rejected`   | `Counter<long>`   | Number of requests rejected with `CostGuardLimitExceededException` |
 
-## Known Limitations (`v0.1.0`)
+## Known Limitations (`v0.1.1`)
 
 Please keep the following design trade-offs in mind when deploying to production:
 

@@ -34,7 +34,7 @@ public static class CostGuardMetrics
     /// </summary>
     public const string RequestsRejectedInstrumentName = "costguard.requests.rejected";
 
-    private static readonly Meter _meter = new(MeterName, "0.1.0");
+    private static readonly Meter _meter = new(MeterName, "0.1.1");
 
     private static readonly Counter<long> _tokensConsumed = _meter.CreateCounter<long>(
         TokensConsumedInstrumentName,

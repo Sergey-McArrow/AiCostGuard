@@ -50,10 +50,13 @@ public sealed class ObservabilityAndDiTests
     [Fact]
     public async Task CostGuardMetrics_EmitsTokensCostFallbackAndRejectionCounters()
     {
+        const string TestScope = "metrics-isolated-scope";
+
         long tokensRecorded = 0;
         double costRecorded = 0d;
         long fallbacksRecorded = 0;
         long rejectionsRecorded = 0;
+        Lock costLock = new();
 
         using MeterListener listener = new();
         listener.InstrumentPublished = (instrument, meterListener) =>
@@ -64,8 +67,13 @@ public sealed class ObservabilityAndDiTests
             }
         };
 
-        listener.SetMeasurementEventCallback<long>((instrument, measurement, _, _) =>
+        listener.SetMeasurementEventCallback<long>((instrument, measurement, tags, _) =>
         {
+            if (!HasScopeTag(tags, TestScope))
+            {
+                return;
+            }
+
             switch (instrument.Name)
             {
                 case CostGuardMetrics.TokensConsumedInstrumentName:
@@ -80,11 +88,14 @@ public sealed class ObservabilityAndDiTests
             }
         });
 
-        listener.SetMeasurementEventCallback<double>((instrument, measurement, _, _) =>
+        listener.SetMeasurementEventCallback<double>((instrument, measurement, tags, _) =>
         {
-            if (instrument.Name == CostGuardMetrics.CostUsdInstrumentName)
+            if (instrument.Name == CostGuardMetrics.CostUsdInstrumentName && HasScopeTag(tags, TestScope))
             {
-                costRecorded += measurement;
+                lock (costLock)
+                {
+                    costRecorded += measurement;
+                }
             }
         });
 
@@ -99,6 +110,7 @@ public sealed class ObservabilityAndDiTests
             MaxTokensPerRequest = 1_000,
             EstimatedOutputTokensBuffer = 200,
             FallbackClient = fallback,
+            KeySelector = _ => TestScope,
         };
         options.SetModelPricing("metric-model", 100m, 100m); // 300 tokens = $0.03 USD
         options.AddBudgetRule(maxUsd: 0.04m, BudgetWindowType.FixedUtcDay, LimitExceededAction.Fallback);
@@ -116,9 +128,26 @@ public sealed class ObservabilityAndDiTests
         await Assert.ThrowsAsync<CostGuardLimitExceededException>(() =>
             client.GetResponseAsync([new ChatMessage(ChatRole.User, hugeText)]));
 
-        Assert.True(tokensRecorded >= 300);
-        Assert.True(costRecorded >= 0.03d);
-        Assert.True(fallbacksRecorded >= 1);
-        Assert.True(rejectionsRecorded >= 1);
+        Assert.Equal(300, Interlocked.Read(ref tokensRecorded));
+        lock (costLock)
+        {
+            Assert.Equal(0.03d, costRecorded, precision: 6);
+        }
+
+        Assert.Equal(1, Interlocked.Read(ref fallbacksRecorded));
+        Assert.Equal(1, Interlocked.Read(ref rejectionsRecorded));
+    }
+
+    private static bool HasScopeTag(ReadOnlySpan<KeyValuePair<string, object?>> tags, string expectedScope)
+    {
+        foreach (KeyValuePair<string, object?> tag in tags)
+        {
+            if (tag.Key == "scope" && tag.Value is string scope && scope == expectedScope)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
